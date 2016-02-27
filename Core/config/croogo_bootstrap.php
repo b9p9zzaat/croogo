@@ -19,6 +19,7 @@ use Croogo\Core\Status;
 use Croogo\Core\Event\CroogoEventManager;
 use Croogo\Extensions\CroogoPlugin;
 use Croogo\Settings\Configure\Engine\DatabaseConfig;
+use Cake\Core\Configure\Engine\JsonConfig;
 
 /**
  * Default Acl plugin.  Custom Acl plugin should override this value.
@@ -53,6 +54,9 @@ Configure::write('Croogo.Cache.defaultConfig', $cacheConfig);
 /**
  * Settings
  */
+Configure::config('settingsJson', new JsonConfig());
+Configure::load('settings', 'settingsJson');
+
 Configure::config('settings', new DatabaseConfig());
 Configure::load('settings', 'settings');
 
@@ -122,6 +126,7 @@ $plugins = array_filter(explode(',', $pluginBootstraps));
 if (!in_array($aclPlugin, $plugins)) {
     $plugins = Hash::merge((array)$aclPlugin, $plugins);
 }
+
 foreach ($plugins as $plugin) {
     $pluginName = Inflector::camelize($plugin);
     $pluginPath = APP . 'Plugin' . DS . $pluginName;
@@ -148,5 +153,6 @@ foreach ($plugins as $plugin) {
     ];
     CroogoPlugin::load($option);
 }
+
 CroogoEventManager::loadListeners();
 Croogo::dispatchEvent('Croogo.bootstrapComplete');
